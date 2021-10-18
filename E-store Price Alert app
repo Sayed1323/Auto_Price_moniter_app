@@ -1,0 +1,66 @@
+import requests
+from bs4 import BeautifulSoup
+import smtplib
+
+
+url = "https://tinyurl.com/yjcdoln2"    #url of your required Web Site
+
+header={
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36 Edg/93.0.961.47",
+    "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+    "accept-encoding": "gzip, deflate, br",
+    "accept-language": "en-GB,en;q=0.9,en-US;q=0.8",
+    "cache-control": "max-age=0",
+    "referer": "https://tinyurl.com/yjcdoln2",
+    "sec-ch-ua": '"Microsoft Edge";v="93", " Not;A Brand";v="99", "Chromium";v="93"',
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "Windows",
+    "sec-fetch-dest": "document",
+    "sec-fetch-mode": "navigate",
+    "sec-fetch-site": "cross-site",
+    "sec-fetch-user": "?1",
+    "upgrade-insecure-requests": "1"
+  }
+
+
+def check_price():
+    data=requests.get(url,headers=header)
+    soup=BeautifulSoup(data.content,'html.parser')
+    title=soup.find('span',attrs={"B_NuCI"}).get_text()
+    price=soup.find('div',attrs={'CEmiEU'}).get_text()
+    converted_price = float(price[1:3])
+    #print(converted_price)
+
+
+    if (converted_price<=24.00):     #this is about giving the price range for product
+        send_mail()
+
+
+def send_mail():
+    server = smtplib.SMTP('smtp.gmail.com',587)
+    server.ehlo()
+    server.starttls()
+    server.ehlo()
+
+    Email=input('sender_mail:')
+    password = input('password:')
+    reciever_mail=input('reciever_mail:')
+
+    server.login(Email,password)
+
+    subject='The surprise is here,great fall in price!'
+    body = 'Check the link here\n\n' \
+         'https://tinyurl.com/yjcdoln2\n\n THE CODE EXICUTED....!'
+    msg = f"Subject: {subject}\n\n\n{body}"
+
+    server.sendmail(
+
+       Email,
+       reciever_mail,
+        msg
+    )
+    print('mail sent!')
+
+    server.quit()
+
+check_price()
